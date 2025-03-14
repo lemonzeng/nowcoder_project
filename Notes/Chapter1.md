@@ -274,7 +274,8 @@ public class CommunityApplication {
 public class CommunityApplicationTests implements ApplicationContextAware //必须要这个接口{
     private ApplicationContext applicationContext; //这个其实就是容器
 
-	//需要重载这个方法
+	//需要重写（Override) 这个方法
+        //重写：子类重新定义从父类继承的方法，方法名、参数列表、返回类型必须完全一致；目的：根据需要提供特定的实现，属于运行时的多态性；
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -390,6 +391,57 @@ public void testBeanConfig() {
 }
 ```
 
+#### 使用 @Configuration 和 @Bean 装配自定义 Bean 示例
+
+下面给出一个完整的示例，展示如何使用 Spring 的 `@Configuration` 和 `@Bean` 注解来装配一个自定义 Bean。
+
+---
+
+##### 1. 定义自定义类
+
+```java
+public class MyService {
+    public void doSomething() {
+        System.out.println("MyService 正在执行某个操作...");
+    }
+}
+##### 2. 配置类中装配自定义 Bean
+```java
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+    @Bean  // 返回的 MyService 对象会被 Spring 管理为 bean
+    public MyService myService() {
+        return new MyService();
+    }
+}
+
+```
+##### 3. 获取并使用自定义 Bean
+```java
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class MyServiceTest {
+
+    @Test
+    public void testMyServiceBean() {
+        // 使用 AppConfig 配置类初始化 Spring 容器
+        ApplicationContext applicationContext =
+            new AnnotationConfigApplicationContext(AppConfig.class);
+        
+        // 通过类型获取装配好的 bean
+        MyService myService = applicationContext.getBean(MyService.class);
+        myService.doSomething();
+    }
+}
+
+```
+
+
 #### 更简单使用容器的方式
 
 依赖注入（Dependency Injection)
@@ -416,6 +468,8 @@ public void testDI() {
 不用我们自己实例化，如果是依赖接口，还能降低耦合度。
 
 #### 综合演示依赖注入
+![image](https://github.com/user-attachments/assets/b49cd1c6-8eed-4d38-8bb1-ce1885c40788)
+
 
 controller调用service，service调用dao，所以在controller中注入service,在service中注入dao。即可实现依赖注入。具体代码如下：
 
